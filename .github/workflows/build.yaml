@@ -16,4 +16,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: enhanced-lyrics
-          path: artifacts/enhanced-lyrics-1.0.0.zip
+          path: artifacts/enhanced-lyrics-0.1.0.zip

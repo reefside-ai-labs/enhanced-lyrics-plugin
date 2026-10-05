@@ -11,4 +11,4 @@ cp Jellyfin.Plugin.EnhancedLyrics/bin/Release/net10.0/TtmlLyricParser.dll artifa
 cp scripts/integrate-web.py artifacts/
 cp README.md LICENSE THIRD-PARTY-NOTICES.md artifacts/
 cp -R licenses artifacts/
-(cd artifacts && zip -qr enhanced-lyrics-1.0.0.zip EnhancedLyrics integrate-web.py README.md LICENSE THIRD-PARTY-NOTICES.md licenses)
+(cd artifacts && zip -qr enhanced-lyrics-0.1.0.zip EnhancedLyrics integrate-web.py README.md LICENSE THIRD-PARTY-NOTICES.md licenses)
