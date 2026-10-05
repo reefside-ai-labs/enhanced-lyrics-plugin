@@ -57,6 +57,37 @@ In the plugin's dashboard configuration, enable/disable Enhanced Lyrics and anim
 
 The example Docker image copies the plugin into `/config/plugins` at each startup. To uninstall from that setup, use the stock image and remove the two plugin DLLs from that instance's configuration directory.
 
+## Publishing releases
+
+Publish a GitHub release with a tag such as `v1.0.0` or `v1.0.0.0` to run
+`.github/workflows/publish.yaml`. Tags must have three or four numeric components,
+with an optional `v` prefix. The tag supplies the package and assembly version;
+update the compatibility metadata and changelog in `build.yaml` before tagging.
+
+The workflow builds the embedded Web assets, runs the tests, and uploads a
+Jellyfin-installable `enhanced-lyrics_<version>.zip` and `manifest.json` to the
+release. This ZIP has both DLLs at its root, unlike the manual installation bundle
+from `scripts/build.sh`. After upload succeeds, it sends a `plugin-release`
+notification to `reefside-ai-labs/jellyfin-plugin-repo`, which imports stable
+releases and commits the updated catalog. Drafts and prereleases are excluded
+from the catalog. To retry packaging or notification, run **Actions → Publish
+plugin → Run workflow** with the existing release tag.
+
+The publishing repository needs the Actions variable `PLUGIN_REPO_APP_CLIENT_ID`
+and secret `PLUGIN_REPO_APP_PRIVATE_KEY`. These belong to a GitHub App installed
+on `reefside-ai-labs/jellyfin-plugin-repo` with **Contents: read and write**.
+The catalog also needs this plugin's repository and GUID registered in its
+`plugins.json`; its weekly polling is a fallback for missed notifications.
+
+Add the catalog to Jellyfin under **Dashboard → Plugins → Repositories**:
+
+```text
+https://raw.githubusercontent.com/reefside-ai-labs/jellyfin-plugin-repo/main/manifest.json
+```
+
+Catalog installation installs the server plugin and embedded assets. Enable the
+Web integration with `scripts/integrate-web.py` as described above.
+
 ## Sidecars and selection
 
 For `Song.flac`, supported names include:
