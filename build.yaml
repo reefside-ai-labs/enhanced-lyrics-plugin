@@ -1,7 +1,7 @@
 ---
 name: "Enhanced Lyrics"
 guid: "08c641eb-0fb9-47c7-9dc1-08615b8d220b"
-version: "0.1.0.0"
+version: "0.1.1.0"
 targetAbi: "12.1.0.0"
 framework: "net10.0"
 overview: "TTML and word-timed lyrics with an enhanced Jellyfin Web player"
@@ -15,4 +15,4 @@ artifacts:
   - "Jellyfin.Plugin.EnhancedLyrics.dll"
   - "TtmlLyricParser.dll"
 changelog: >
-  Initial Jellyfin 12.1 release.
+  Refresh release metadata and packaging for the Reefside AI Labs plugin catalog.
