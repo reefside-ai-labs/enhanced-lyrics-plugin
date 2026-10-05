@@ -1,0 +1,21 @@
+.lyricPage > .el-host { width: 100%; max-width: 80rem; }
+.lyricsContainer.el-native-hidden { display: none !important; }
+.enhanced-lyrics { position: relative; isolation: isolate; display: flex; flex-direction: column; height: calc(100dvh - 12rem); min-height: 22rem; max-width: 80rem; margin: auto; overflow: hidden; border-radius: 1.25rem; color: #fff; background: #15151b; }
+.enhanced-lyrics::before { content: ''; position: absolute; inset: -4rem; z-index: -2; background: var(--el-art) center/cover; filter: blur(60px); opacity: .5; }
+.enhanced-lyrics::after { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(135deg, #15151b66, #08080ccc); pointer-events: none; }
+.el-background { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -2; opacity: .75; }
+.el-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.5rem; z-index: 1; }
+.el-title { font-size: 1rem; opacity: .8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.el-toolbar > div { display: flex; gap: .5rem; }
+.el-toolbar button, .el-variant-controls button, .el-variant-controls select { border: 1px solid #ffffff30; border-radius: 2rem; padding: .55rem .9rem; color: white; background: #ffffff18; font: inherit; cursor: pointer; white-space: nowrap; }
+.el-variant-controls { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; padding: 0 1.5rem .5rem; z-index: 1; }
+.el-variant-controls select option { color: white; background: #202028; }
+.el-variant-controls button[aria-pressed="true"] { background: #ffffff38; }
+.el-variant-controls :focus-visible { outline: 2px solid white; outline-offset: 3px; }
+.el-toolbar button:focus-visible { outline: 2px solid white; outline-offset: 3px; }
+.el-toolbar [hidden] { display: none; }
+.el-words { flex: 1; display: block; min-height: 0; overflow-y: auto; padding: 0 clamp(1rem, 6vw, 6rem); scrollbar-width: none; --blyrics-font-size: clamp(1.8rem, 4vw, 3.4rem); --blyrics-translated-font-size: clamp(1.1rem, 2.5vw, 2rem); }
+.enhanced-lyrics .blyrics-container { padding-top: 22vh; padding-bottom: 35vh; }
+.el-expanded { position: fixed; inset: 4.25rem 0 5.5rem; height: auto; max-width: none; border-radius: 0; z-index: 1000; }
+@media (max-width: 600px) { .enhanced-lyrics { height: calc(100dvh - 10rem); border-radius: .75rem; } .el-toolbar { padding: .8rem; flex-wrap: wrap; } .el-title { flex-basis: 100%; } .el-expanded { height: auto; } }
+@media (prefers-reduced-motion: reduce) { .enhanced-lyrics *, .enhanced-lyrics *::before, .enhanced-lyrics *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } .el-background { display: none; } }

@@ -1,0 +1,22 @@
+<tt xmlns="http://www.w3.org/ns/ttml" xmlns:ttm="http://www.w3.org/ns/ttml#metadata" xmlns:am="http://music.apple.com/lyric-ttml-internal" am:timing="Word" xml:lang="ja">
+  <head><metadata>
+    <ttm:agent xml:id="v1" type="person"><ttm:name type="full">Singer One</ttm:name></ttm:agent>
+    <ttm:agent xml:id="v2" type="person"><ttm:name type="full">Singer Two</ttm:name></ttm:agent>
+    <am:translations>
+      <am:translation xml:lang="en"><am:text for="L1">A blue sky</am:text><am:text for="L2">Light shines</am:text></am:translation>
+      <am:translation xml:lang="fr"><am:text for="L1">Un ciel bleu</am:text><am:text for="L2">La lumière brille</am:text></am:translation>
+    </am:translations>
+    <am:transliterations><am:transliteration xml:lang="ja-Latn">
+      <am:text for="L1"><span begin="00:02.000" end="00:04.000">Aoi </span><span begin="00:04.000" end="00:06.000">sora</span></am:text>
+      <am:text for="L2">Hikari ga hikaru</am:text>
+    </am:transliteration></am:transliterations>
+  </metadata></head>
+  <body><div>
+    <p begin="00:02.000" end="00:06.000" ttm:agent="v1" am:key="L1"><span begin="00:02.000" end="00:04.000">青い </span><span begin="00:04.000" end="00:06.000">空</span></p>
+    <p begin="00:07.000" end="00:11.000" ttm:agent="v2" am:key="L2"><span begin="00:07.000" end="00:09.000">光が </span><span begin="00:09.000" end="00:11.000">光る</span></p>
+    <p begin="00:12.000" end="00:17.000" ttm:agent="v1" am:key="L3"><span begin="00:12.000" end="00:15.000">Lead voice </span><span ttm:role="x-bg" ttm:agent="v2"><span begin="00:13.000" end="00:15.000">(echo </span><span begin="00:15.000" end="00:17.000">answer)</span></span></p>
+    <p begin="00:18.000" end="00:22.000" ttm:agent="v1" am:key="L4"><span begin="00:18.000" end="00:20.000">Singer one </span><span begin="00:20.000" end="00:22.000">together</span></p>
+    <p begin="00:19.000" end="00:23.000" ttm:agent="v2" am:key="L5"><span begin="00:19.000" end="00:21.000">Singer two </span><span begin="00:21.000" end="00:23.000">together</span></p>
+    <p begin="00:24.000" end="00:28.000" ttm:agent="v1 v2" am:key="L6"><span begin="00:24.000" end="00:26.000">Both singers </span><span begin="00:26.000" end="00:28.000">unison</span></p>
+  </div></body>
+</tt>

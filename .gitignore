@@ -1,0 +1,11 @@
+bin/
+obj/
+.vs/
+.idea/
+artifacts
+
+node_modules/
+.test-data/
+Jellyfin.Plugin.EnhancedLyrics/Web/dist/
+
+__pycache__/

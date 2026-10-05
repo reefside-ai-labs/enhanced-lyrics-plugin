@@ -1,0 +1,12 @@
+services:
+  jellyfin:
+    build: .
+    image: enhanced-lyrics-jellyfin:local
+    container_name: enhanced-lyrics-jellyfin
+    ports:
+      - "127.0.0.1:8098:8096"
+    volumes:
+      - ./.test-data/config:/config
+      - ./.test-data/cache:/cache
+      - ./.test-data/media:/media:ro
+    restart: "no"

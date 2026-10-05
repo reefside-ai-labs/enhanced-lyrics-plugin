@@ -1,0 +1,29 @@
+<div id="EnhancedLyricsConfigPage" data-role="page" class="page type-interior pluginConfigurationPage" data-require="emby-input,emby-button,emby-checkbox">
+ <div data-role="content"><div class="content-primary">
+  <form id="EnhancedLyricsConfigForm">
+   <h2>Enhanced Lyrics</h2>
+   <label><input is="emby-checkbox" type="checkbox" id="Enabled"/><span>Enable enhanced lyrics</span></label>
+   <label><input is="emby-checkbox" type="checkbox" id="AnimatedBackground"/><span>Animate album-art backgrounds</span></label>
+   <p>Install the bundled Web loader using the integration script, then reload Jellyfin Web. Disabling this plugin restores the original view. A server restart is required after removing the plugin.</p>
+   <p id="IntegrationStatus" role="status"></p>
+   <button is="emby-button" type="submit" class="raised button-submit block"><span>Save</span></button>
+  </form>
+ </div></div>
+ <script type="text/javascript">
+  const enhancedLyricsId = '08c641eb-0fb9-47c7-9dc1-08615b8d220b';
+  document.querySelector('#EnhancedLyricsConfigPage').addEventListener('pageshow', async function () {
+   const config = await ApiClient.getPluginConfiguration(enhancedLyricsId);
+   document.querySelector('#Enabled').checked = config.Enabled;
+   document.querySelector('#AnimatedBackground').checked = config.AnimatedBackground;
+   document.querySelector('#IntegrationStatus').textContent = window.EnhancedLyrics?.bridgeReady ? 'Web playback integration is connected.' : 'Web integration is not connected. Install the loader or check the browser console for [Enhanced Lyrics] diagnostics.';
+  });
+  document.querySelector('#EnhancedLyricsConfigForm').addEventListener('submit', async function (event) {
+   event.preventDefault();
+   const config = await ApiClient.getPluginConfiguration(enhancedLyricsId);
+   config.Enabled = document.querySelector('#Enabled').checked;
+   config.AnimatedBackground = document.querySelector('#AnimatedBackground').checked;
+   const result = await ApiClient.updatePluginConfiguration(enhancedLyricsId, config);
+   Dashboard.processPluginConfigurationUpdateResult(result);
+  });
+ </script>
+</div>
