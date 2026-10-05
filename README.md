@@ -73,7 +73,7 @@ releases and commits the updated catalog. Drafts and prereleases are excluded
 from the catalog. To retry packaging or notification, run **Actions → Publish
 plugin → Run workflow** with the existing release tag.
 
-The publishing repository needs the Actions variable `PLUGIN_REPO_APP_CLIENT_ID`
+The publishing repository needs the Actions secret `PLUGIN_REPO_APP_CLIENT_ID`
 and secret `PLUGIN_REPO_APP_PRIVATE_KEY`. These belong to a GitHub App installed
 on `reefside-ai-labs/jellyfin-plugin-repo` with **Contents: read and write**.
 The catalog also needs this plugin's repository and GUID registered in its
