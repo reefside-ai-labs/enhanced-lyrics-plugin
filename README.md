@@ -1,3 +1,7 @@
+<p align="center">
+    <img src="./images/enhanced-lyrics.png" alt="Enhanced Lyrics" height="400" />
+</p>
+
 # Enhanced Lyrics for Jellyfin
 
 A Jellyfin **12.1 / .NET 10** plugin that replaces local lyric discovery and the server-hosted Jellyfin Web lyrics view. Based on [jellyfin-plugin-template](https://github.com/jellyfin/jellyfin-plugin-template).
