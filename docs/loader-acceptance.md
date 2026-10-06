@@ -15,8 +15,8 @@ mkdir -p artifacts/loader-candidate
 .test-data/jprm-venv/bin/jprm plugin build . --output artifacts/loader-candidate --dotnet-framework net10.0
 npm --prefix tests/loader ci
 PLAYWRIGHT_SKIP_BROWSER_GC=1 npx --prefix tests/loader playwright install chromium
-./scripts/test-loader-install.sh --recreate --package artifacts/loader-candidate/enhanced-lyrics_0.2.0.0.zip
-./scripts/test-loader-install.sh --recreate --image jellyfin/jellyfin:12.1 --base-url /jf --package artifacts/loader-candidate/enhanced-lyrics_0.2.0.0.zip
+./scripts/test-loader-install.sh --recreate --package artifacts/loader-candidate/enhanced-lyrics_0.2.1.0.zip
+./scripts/test-loader-install.sh --recreate --image jellyfin/jellyfin:12.1 --base-url /jf --package artifacts/loader-candidate/enhanced-lyrics_0.2.1.0.zip
 ```
 
 Use the filename emitted by the package builder if the version changes. Linux hosts may need `playwright install --with-deps chromium`. Docker's 12.1 tag is `12.1`, not `12.1.0` ([official image tags](https://hub.docker.com/r/jellyfin/jellyfin/tags)). `--fresh` omits the recreation phase. `--server-only` is a diagnostic subset and reports `PASS_SERVER_ONLY`, never full acceptance.
@@ -47,4 +47,4 @@ The published v0.2.0 catalog package installed and reported active in a clean st
 - Fixed candidate, stock 12.1 (server 12.1.0), `/jf`: **PASS**, same complete assertions. Evidence: `.test-data/loader-tests/el-loader-91bfc3242d/report.json`.
 - Final candidate, stock latest (server 12.2.0), `/jf`: **PASS**, same complete assertions. Evidence: `.test-data/loader-tests/el-loader-ce14176740/report.json`.
 
-The successful browser samples measured about 60 fps with zero lyric-clock stalls. Playback screenshots show both authored translation and romanization rows. All 29 .NET tests, 19 Web tests, and two legacy Python integration tests passed. The candidate remains unreleased; these runs did not change the personal server.
+The successful browser samples measured about 60 fps with zero lyric-clock stalls. Playback screenshots show both authored translation and romanization rows. All 29 .NET tests, 19 Web tests, and two legacy Python integration tests passed. These runs tested the implementation subsequently packaged for v0.2.1; they did not change the personal server.

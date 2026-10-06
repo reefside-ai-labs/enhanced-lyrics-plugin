@@ -39,7 +39,7 @@ Requires .NET 10, Node 24 or newer, Python 3, and `zip`.
 ./scripts/build.sh
 ```
 
-The distributable is `artifacts/enhanced-lyrics-0.2.0.zip`. Copy **both** DLLs from `artifacts/EnhancedLyrics/` to a new directory beneath Jellyfin's `plugins` directory, then restart Jellyfin. Web assets are embedded in the plugin DLL; do not copy Jellyfin runtime assemblies into the plugin directory.
+The distributable is `artifacts/enhanced-lyrics-0.2.1.zip`. Copy **both** DLLs from `artifacts/EnhancedLyrics/` to a new directory beneath Jellyfin's `plugins` directory, then restart Jellyfin. Web assets are embedded in the plugin DLL; do not copy Jellyfin runtime assemblies into the plugin directory.
 
 The plugin automatically inserts its loader into server-hosted Web responses. Install, restart Jellyfin, and reload the browser. It does not edit Web files or require a custom Docker image. If upgrading from a manually patched installation, remove the old tag once with `python3 scripts/integrate-web.py /path/to/jellyfin-web --remove`; future Web updates require no patching.
 
@@ -51,7 +51,7 @@ The example Docker image copies the plugin into `/config/plugins` at each startu
 
 ## Publishing releases
 
-Publish a GitHub release with a tag such as `v0.2.0` or `v0.2.0.0` to run
+Publish a GitHub release with a tag such as `v0.2.1` or `v0.2.1.0` to run
 `.github/workflows/publish.yaml`. Tags must have three or four numeric components,
 with an optional `v` prefix. The tag supplies the package and assembly version;
 update the compatibility metadata and changelog in `build.yaml` before tagging.
