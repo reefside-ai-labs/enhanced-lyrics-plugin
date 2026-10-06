@@ -39,7 +39,7 @@ Requires .NET 10, Node 24 or newer, Python 3, and `zip`.
 ./scripts/build.sh
 ```
 
-The distributable is `artifacts/enhanced-lyrics-0.1.2.zip`. Copy **both** DLLs from `artifacts/EnhancedLyrics/` to a new directory beneath Jellyfin's `plugins` directory, then restart Jellyfin. Web assets are embedded in the plugin DLL; do not copy Jellyfin runtime assemblies into the plugin directory.
+The distributable is `artifacts/enhanced-lyrics-0.2.0.zip`. Copy **both** DLLs from `artifacts/EnhancedLyrics/` to a new directory beneath Jellyfin's `plugins` directory, then restart Jellyfin. Web assets are embedded in the plugin DLL; do not copy Jellyfin runtime assemblies into the plugin directory.
 
 For a non-Docker install, enable the bundled Web integration once:
 
@@ -63,7 +63,7 @@ The example Docker image copies the plugin into `/config/plugins` at each startu
 
 ## Publishing releases
 
-Publish a GitHub release with a tag such as `v0.1.2` or `v0.1.2.0` to run
+Publish a GitHub release with a tag such as `v0.2.0` or `v0.2.0.0` to run
 `.github/workflows/publish.yaml`. Tags must have three or four numeric components,
 with an optional `v` prefix. The tag supplies the package and assembly version;
 update the compatibility metadata and changelog in `build.yaml` before tagging.
@@ -129,7 +129,7 @@ The plugin decorates `ILyricManager` for local reads and provides a high-priorit
 - `GET /EnhancedLyrics/Status`: public feature flags, without library data.
 - `GET /EnhancedLyrics/Assets/enhanced-lyrics.js` and `.css`: public embedded static assets.
 
-Jellyfin 12.1 does not expose its playback manager as a browser global. The early loader observes webpack registration and captures the existing manager when its module executes. It does not execute unrelated modules. The renderer reads Jellyfin's current position and calls its normal seek/play controls, supporting transcoding and player changes through the manager. This is a version-specific integration seam: if it cannot find the manager or load lyrics, it leaves the original view available and reports `[Enhanced Lyrics]` diagnostics in the browser console. The dashboard also reports whether the bridge connected.
+Jellyfin 12.1 does not expose its playback manager as a browser global. The early loader observes webpack registration and captures the existing manager when its module executes. It does not execute unrelated modules. The renderer reads the active local media clock every animation frame for smooth word highlighting, preserving Jellyfin's transcoding offset. Remote players retain Jellyfin's reported clock. Seek/play controls and player changes continue through Jellyfin's playback manager. This is a version-specific integration seam: if it cannot find the manager or load lyrics, it leaves the original view available and reports `[Enhanced Lyrics]` diagnostics in the browser console. The dashboard also reports whether the bridge connected.
 
 The original lyric container stays mounted while the replacement is active, and is restored on failure or disable. Pending requests are cancelled on track/view changes, and renderer, resize observer, and WebGL resources are released when the view closes.
 
