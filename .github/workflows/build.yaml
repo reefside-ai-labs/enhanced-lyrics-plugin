@@ -16,7 +16,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: enhanced-lyrics
-          path: artifacts/enhanced-lyrics-0.2.1.zip
+          path: artifacts/enhanced-lyrics-0.2.2.zip
 
   loader-acceptance:
     runs-on: ubuntu-latest
