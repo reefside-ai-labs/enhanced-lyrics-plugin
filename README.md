@@ -15,7 +15,7 @@ A Jellyfin **12.1 / .NET 10** plugin that replaces local lyric discovery and the
 
 ## Try it with Docker
 
-The Dockerfile extends **`jellyfin/jellyfin:latest`**, builds both components, installs the plugin, and adds the Web loader. The target remains 12.1; future `latest` releases must be checked before use.
+The Dockerfile extends **`jellyfin/jellyfin:latest`**, builds both components, installs the plugin, and uses its automatic Web integration. The target remains 12.1; future `latest` releases must be checked before use.
 
 ```sh
 python3 scripts/create-test-media.py
@@ -41,23 +41,11 @@ Requires .NET 10, Node 24 or newer, Python 3, and `zip`.
 
 The distributable is `artifacts/enhanced-lyrics-0.2.0.zip`. Copy **both** DLLs from `artifacts/EnhancedLyrics/` to a new directory beneath Jellyfin's `plugins` directory, then restart Jellyfin. Web assets are embedded in the plugin DLL; do not copy Jellyfin runtime assemblies into the plugin directory.
 
-For a non-Docker install, enable the bundled Web integration once:
-
-```sh
-python3 scripts/integrate-web.py /path/to/jellyfin-web
-```
-
-This adds one script tag **before Jellyfin's scripts** in `index.html`. It keeps a backup and does not alter hashed JavaScript bundles. Reload the browser, clearing its Web cache if needed. A Web update replaces `index.html`; rerun the installer after updating.
-
-Remove the loader with:
-
-```sh
-python3 scripts/integrate-web.py /path/to/jellyfin-web --remove
-```
+The plugin automatically inserts its loader into server-hosted Web responses. Install, restart Jellyfin, and reload the browser. It does not edit Web files or require a custom Docker image. If upgrading from a manually patched installation, remove the old tag once with `python3 scripts/integrate-web.py /path/to/jellyfin-web --remove`; future Web updates require no patching.
 
 The loader assumes Jellyfin Web is served by its Jellyfin server at `/web/` (including a configured base URL such as `/jellyfin/web/`). Separately hosted Web clients need a different asset bootstrap and are outside this release's supported installation.
 
-In the plugin's dashboard configuration, enable/disable Enhanced Lyrics and animated backgrounds. Disabling the plugin restores the built-in view within five seconds. Removing the plugin requires a server restart; its missing asset/API routes cause the loader to leave the built-in view available. Remove the loader as well to avoid a harmless missing-script request.
+In the plugin's dashboard configuration, enable/disable Enhanced Lyrics and animated backgrounds. Disabling the plugin restores the built-in view within five seconds. Disabling stops loader injection into subsequent page loads. Removing the plugin requires a server restart and restores stock Web responses automatically.
 
 The example Docker image copies the plugin into `/config/plugins` at each startup. To uninstall from that setup, use the stock image and remove the two plugin DLLs from that instance's configuration directory.
 
@@ -89,8 +77,7 @@ Add the catalog to Jellyfin under **Dashboard → Plugins → Repositories**:
 https://raw.githubusercontent.com/reefside-ai-labs/jellyfin-plugin-repo/main/manifest.json
 ```
 
-Catalog installation installs the server plugin and embedded assets. Enable the
-Web integration with `scripts/integrate-web.py` as described above.
+Catalog installation installs the server plugin and embedded assets. Restart Jellyfin and reload Web to activate automatic integration.
 
 ## Sidecars and selection
 
@@ -122,6 +109,8 @@ TTML timing follows the parser's automatic standard/Apple dialect detection. Sta
 
 ## How integration works
 
+An ASP.NET startup filter inserts the loader before Jellyfin boot scripts in `/web/` and `/web/index.html` responses, including configured base URLs. The stock Web directory can stay read-only. Transformed HTML uses `Cache-Control: no-store`; HEAD returns matching metadata, and conditional/range requests receive the complete transformed page. Other routes pass through unchanged.
+
 The plugin decorates `ILyricManager` for local reads and provides a high-priority `ILyricParser`. It preserves Jellyfin's provider, upload, download, and delete implementations. It does not create conflicting replacements for core controller routes. TTML sidecars are discovered by the plugin because Jellyfin's built-in scanner does not recognize their extension.
 
 - `GET /Audio/{itemId}/Lyrics`: existing authorized Jellyfin endpoint; returns compatible lines and cues using **ticks**.
@@ -144,5 +133,7 @@ python3 scripts/smoke-test.py  # with the isolated compose instance running
 ```
 
 Tests cover TTML relative/Apple timing, cue character ranges, ELRC offsets and repeated timestamps, malformed input and XML entity rejection, language/format priority, fallback, size/symlink limits, cancellation, rich-to-renderer conversion, webpack registration, and reversible loader installation. Synthetic fixtures contain original test text and generated audio.
+
+The [cold-install acceptance test](docs/loader-acceptance.md) installs a catalog package into stock, read-only Jellyfin Docker, uses a fresh browser with caches cleared and disabled, checks real playback, and repeats after destroying and recreating the container. Build and publish workflows gate packages on this test.
 
 License: GPL-3.0, inherited from the Jellyfin plugin template. See `THIRD-PARTY-NOTICES.md` for bundled MIT libraries.

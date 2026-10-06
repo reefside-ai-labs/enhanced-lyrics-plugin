@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
  <PropertyGroup><TargetFramework>net10.0</TargetFramework><Nullable>enable</Nullable><ImplicitUsings>enable</ImplicitUsings><IsTestProject>true</IsTestProject><IsPackable>false</IsPackable></PropertyGroup>
  <ItemGroup>
+  <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="10.0.0" />
   <ProjectReference Include="../../Jellyfin.Plugin.EnhancedLyrics/Jellyfin.Plugin.EnhancedLyrics.csproj" />
   <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
   <PackageReference Include="xunit" Version="2.9.3" />

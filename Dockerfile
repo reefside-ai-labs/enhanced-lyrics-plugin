@@ -11,12 +11,7 @@ COPY Directory.Build.props .editorconfig ./
 COPY Jellyfin.Plugin.EnhancedLyrics/ Jellyfin.Plugin.EnhancedLyrics/
 COPY --from=web-build /src/Jellyfin.Plugin.EnhancedLyrics/Web/dist/ Jellyfin.Plugin.EnhancedLyrics/Web/dist/
 RUN dotnet build Jellyfin.Plugin.EnhancedLyrics/Jellyfin.Plugin.EnhancedLyrics.csproj -c Release
-FROM python:3.13-alpine AS web-integrate
-COPY --from=jellyfin /jellyfin/jellyfin-web/ /web/
-COPY scripts/integrate-web.py /integrate-web.py
-RUN python /integrate-web.py /web
 FROM jellyfin AS runtime
-COPY --from=web-integrate /web/ /jellyfin/jellyfin-web/
 COPY --from=plugin-build /src/Jellyfin.Plugin.EnhancedLyrics/bin/Release/net10.0/Jellyfin.Plugin.EnhancedLyrics.dll /opt/enhanced-lyrics/
 COPY --from=plugin-build /src/Jellyfin.Plugin.EnhancedLyrics/bin/Release/net10.0/TtmlLyricParser.dll /opt/enhanced-lyrics/
 COPY scripts/docker-entrypoint.sh /opt/enhanced-lyrics/entrypoint.sh

@@ -4,7 +4,7 @@
    <h2>Enhanced Lyrics</h2>
    <label><input is="emby-checkbox" type="checkbox" id="Enabled"/><span>Enable enhanced lyrics</span></label>
    <label><input is="emby-checkbox" type="checkbox" id="AnimatedBackground"/><span>Animate album-art backgrounds</span></label>
-   <p>Install the bundled Web loader using the integration script, then reload Jellyfin Web. Disabling this plugin restores the original view. A server restart is required after removing the plugin.</p>
+   <p>The Web loader is installed automatically. Restart Jellyfin after installation, then reload Jellyfin Web. Disabling this plugin restores the original view. A server restart is required after removing the plugin.</p>
    <p id="IntegrationStatus" role="status"></p>
    <button is="emby-button" type="submit" class="raised button-submit block"><span>Save</span></button>
   </form>
@@ -15,7 +15,7 @@
    const config = await ApiClient.getPluginConfiguration(enhancedLyricsId);
    document.querySelector('#Enabled').checked = config.Enabled;
    document.querySelector('#AnimatedBackground').checked = config.AnimatedBackground;
-   document.querySelector('#IntegrationStatus').textContent = window.EnhancedLyrics?.bridgeReady ? 'Web playback integration is connected.' : 'Web integration is not connected. Install the loader or check the browser console for [Enhanced Lyrics] diagnostics.';
+   document.querySelector('#IntegrationStatus').textContent = window.EnhancedLyrics?.bridgeReady ? 'Web playback integration is connected.' : 'Web integration is not connected. Reload Jellyfin Web or check the browser console for [Enhanced Lyrics] diagnostics.';
   });
   document.querySelector('#EnhancedLyricsConfigForm').addEventListener('submit', async function (event) {
    event.preventDefault();

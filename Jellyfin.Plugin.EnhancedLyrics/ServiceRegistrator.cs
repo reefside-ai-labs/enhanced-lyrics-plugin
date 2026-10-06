@@ -1,4 +1,6 @@
 using Jellyfin.Plugin.EnhancedLyrics.Lyrics;
+using Jellyfin.Plugin.EnhancedLyrics.WebIntegration;
+using Microsoft.AspNetCore.Hosting;
 using MediaBrowser.Controller;
 using MediaBrowser.Controller.Lyrics;
 using MediaBrowser.Controller.Plugins;
@@ -10,6 +12,7 @@ public sealed class ServiceRegistrator : IPluginServiceRegistrator
 {
     public void RegisterServices(IServiceCollection serviceCollection, IServerApplicationHost applicationHost)
     {
+        serviceCollection.AddSingleton<IStartupFilter, WebIntegrationStartupFilter>();
         serviceCollection.AddSingleton<LyricParser>();
         serviceCollection.AddSingleton<LocalLyricReader>();
         serviceCollection.AddHttpContextAccessor();

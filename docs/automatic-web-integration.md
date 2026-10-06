@@ -60,3 +60,8 @@ Tested 2026-10-05 using freshly pulled `jellyfin/jellyfin:latest`, reporting Jel
 - A separate ASP.NET 10 harness additionally passed root/BaseUrl paths, query strings, conditional/range requests, untouched JavaScript, and disable behavior against a read-only physical index. Its HEAD check only proved a bodyless response; matching transformed GET headers remains unimplemented and unverified.
 
 The prototype deliberately omits production concerns: bounded response buffering, complete HEAD/precondition semantics, idempotence for existing manual installs, and interoperability with another transformation filter. It must not be shipped as-is. No changes were made to the personal NAS, production plugin source, or published package.
+
+
+## Production implementation
+
+The prototype above is historical. Production now registers `WebIntegrationStartupFilter` through the service registrator, captures the full response-body feature (including static-file SendFile and BodyWriter), bounds buffering to 1 MiB, and implements transformed HEAD/precondition metadata. Unit tests cover base URLs, transport headers, manual-loader idempotence, bounded fallback, and another HTML transformer in either order. The [cold-install acceptance framework](loader-acceptance.md) installs the real catalog ZIP in unmodified stock Docker and verifies cache-free playback before and after container recreation. No Web patching stage is needed in the example Dockerfile.

@@ -17,3 +17,46 @@ jobs:
         with:
           name: enhanced-lyrics
           path: artifacts/enhanced-lyrics-0.2.0.zip
+
+  loader-acceptance:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ['jellyfin/jellyfin:12.1', 'jellyfin/jellyfin:latest']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: |
+          npm --prefix web ci
+          npm --prefix web run build
+          pip install 'jprm==1.1.0'
+          mkdir -p artifacts/loader-candidate
+          jprm plugin build . --output artifacts/loader-candidate --dotnet-framework net10.0
+          npm --prefix tests/loader ci
+          PLAYWRIGHT_SKIP_BROWSER_GC=1 npx --prefix tests/loader playwright install --with-deps chromium
+      - name: Cold install and recreate with a configured base URL
+        env:
+          TEST_IMAGE: ${{ matrix.image }}
+        run: |
+          packages=(artifacts/loader-candidate/*.zip)
+          ./scripts/test-loader-install.sh --recreate --base-url /jf --image "$TEST_IMAGE" --package "${packages[0]}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          include-hidden-files: true
+          name: loader-evidence-${{ strategy.job-index }}
+          path: |
+            .test-data/loader-tests/*/report.json
+            .test-data/loader-tests/*/server.log
+            .test-data/loader-tests/*/*-index.html
+            .test-data/loader-tests/*/*/browser.json
+            .test-data/loader-tests/*/*/page.png

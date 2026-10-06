@@ -82,6 +82,28 @@ jobs:
             jprm repo add --plugin-url "https://github.com/$GITHUB_REPOSITORY/releases/download/$RELEASE_TAG/$(basename "$package")" artifacts/release/manifest.json "$package"
           done
 
+      - name: Assert cold catalog installation and playback before upload
+        run: |
+          npm --prefix tests/loader ci
+          PLAYWRIGHT_SKIP_BROWSER_GC=1 npx --prefix tests/loader playwright install --with-deps chromium
+          packages=(artifacts/release/*.zip)
+          for image in jellyfin/jellyfin:12.1 jellyfin/jellyfin:latest; do
+            ./scripts/test-loader-install.sh --recreate --base-url /jf --image "$image" --package "${packages[0]}"
+          done
+
+      - name: Preserve loader acceptance evidence
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          include-hidden-files: true
+          name: loader-acceptance-evidence
+          path: |
+            .test-data/loader-tests/*/report.json
+            .test-data/loader-tests/*/server.log
+            .test-data/loader-tests/*/*-index.html
+            .test-data/loader-tests/*/*/browser.json
+            .test-data/loader-tests/*/*/page.png
+
       - name: Upload release assets
         run: gh release upload "$RELEASE_TAG" artifacts/release/*.zip artifacts/release/manifest.json --repo "$GITHUB_REPOSITORY" --clobber
 
