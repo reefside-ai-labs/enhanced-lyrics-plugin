@@ -5,6 +5,7 @@ import '@braccato/core/styles/lyrics.css';
 import '@braccato/core/styles/instrumental.css';
 import { Kawarp } from '@kawarp/core';
 import { installPlaybackBridge } from './bridge.mjs';
+import { readPlaybackClock } from './playback-clock.mjs';
 import { toBraccato, chooseTranslationLanguage } from './convert.mjs';
 import './style.css';
 
@@ -275,9 +276,12 @@ function frame(now) {
     try {
         if (now - lastInspection > 250) { lastInspection = now; inspect(now); }
         if (mounted && playerManager) {
-            mounted.lyrics.currentTime = (playerManager.currentTime() || 0) / 1000;
-            mounted.lyrics.playing = !playerManager.paused();
-            mounted.play.textContent = playerManager.paused() ? 'Play' : 'Pause';
+            const clock = readPlaybackClock(playerManager);
+            // Both setters tick the renderer; a steady play state needs no second tick.
+            if (mounted.lyrics.playing !== clock.playing) mounted.lyrics.playing = clock.playing;
+            mounted.lyrics.currentTime = clock.currentTime;
+            const label = clock.playing ? 'Pause' : 'Play';
+            if (mounted.play.textContent !== label) mounted.play.textContent = label;
         }
     } catch (error) { destroy(); log('Web integration failed; restored the built-in view.', error); }
     requestAnimationFrame(frame);
