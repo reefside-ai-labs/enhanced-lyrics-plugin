@@ -36,3 +36,52 @@ During visible local audio playback on the enhanced Lyrics page, evaluate the ex
 `node --test web/test/playback-clock.test.mjs` deterministically simulates 60 animation frames with four cached updates per second. It failed on the original clock at frame 1, then passed with the fix. The tests also cover transcoding offsets, paused/buffering clocks, seeks, remote-player fallback, invalid media, video, and ended playback. Full Web tests and bundle build passed.
 
 Native local playback was tested live on 12.2. The preserved transcoding offset and remote fallback were tested with fixtures; an actual transcoding session or remote client was not exercised. This work does not promise 60 fps on every GPU or device, and does not interpolate coarse remote-client clocks.
+
+## Playback transition correction
+
+A follow-up found a separate transition bug after the native-clock fix. Braccato's
+individual `playing` and `currentTime` setters each render immediately. Changing
+play state first therefore renders once using the previous time, then again with
+the new time. Existing selected word animations can also survive a seek. While
+paused they never receive drift correction: a seek from 2 to 2.3 seconds left the
+word float animation at 1650 ms instead of 1950 ms. Running playback can eventually
+correct old animations, which explains the temporary disturbance followed by
+smooth movement.
+
+`web/playback-driver.mjs` sends one complete snapshot directly to the element's
+renderer. On pause/resume, seeks and rate changes it cancels song animations and
+marks their render records for immediate setup at the new time. Steady frames
+reuse the animations. It preserves the DOM, translations, layout and scroll state.
+Native `seeking` events also catch small scrubs; lyric clicks explicitly mark a
+seek, and a timeline discontinuity detects coarse clock/remote jumps. Media
+listeners are removed on replacement and unmount. Playback rate is passed through.
+
+The driver uses Braccato 1.16.3's exposed writable render records; this seam needs
+rechecking on upgrades. The element's separate clock setters are no longer used:
+`data-current-time` and `data-playing` expose the last snapshot for profiling and
+acceptance checks. Ordinary animation frames do not reset animation state.
+
+Validation: 24 Web tests passed and the production bundle built. A real browser
+fixture using the installed Braccato renderer and native Web Animations compared
+the previous integration against the driver. The original failed the same-line
+paused seek by 300 ms; the driver passed all six snapshots (initial position,
+paused seek, resume, forward seek, backward seek and pause) within 1 ms. This is an
+isolated renderer reproduction, not a full authenticated Jellyfin playback test
+or a measurement of perceived smoothness on every device. No production server
+or published package was changed.
+
+To repeat the browser check from the repository root:
+
+```sh
+mkdir -p .test-data/transitions
+web/node_modules/.bin/esbuild web/test/browser/transitions.mjs --bundle --outfile=.test-data/transitions/bundle.js
+printf '%s' '<link rel="stylesheet" href="bundle.css"><style>braccato-lyrics{display:block;height:600px}</style><script src="bundle.js"></script>' > .test-data/transitions/index.html
+python3 -m http.server 8101 --directory .test-data/transitions
+```
+
+Open `http://localhost:8101` in the T3 preview and evaluate
+`({original: verifyPlaybackTransitions(true), fixed: verifyPlaybackTransitions()})`.
+Expected verdicts are `fail` and `pass`. The pinned word float animation is checked
+at the requested song time rather than just asserting that a clock property
+changed. `node --test web/test/playback-driver.test.mjs` separately verifies single
+snapshot updates, seeks, stable playback at 1.5x and media-listener cleanup.

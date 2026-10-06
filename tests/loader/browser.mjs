@@ -54,7 +54,7 @@ try {
     assert.equal(await page.locator('.el-variant-controls button').getAttribute('aria-pressed'), 'true');
     report.checks.push('normal navigation initializes bridge, renders synthetic TTML, highlights words, exposes translations/romanization');
     await page.locator('.el-toolbar button:has-text("Pause")').click();
-    await page.waitForFunction(() => document.querySelector('audio').paused && !document.querySelector('braccato-lyrics').playing);
+    await page.waitForFunction(() => document.querySelector('audio').paused && document.querySelector('braccato-lyrics').dataset.playing === 'false');
     assert.equal(await page.evaluate(() => document.querySelector('audio').error?.code || 0), 0);
     for (const filename of ['enhanced-lyrics.js', 'enhanced-lyrics.css']) {
         const event = assetResponses.find(e => new URL(e.response.url).pathname.endsWith('/' + filename));

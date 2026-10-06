@@ -13,7 +13,7 @@
         setTimeout(() => { done = true; resolve(); }, 3000);
         function frame(now) {
             if (done) return;
-            samples.push({ now, lyric: lyrics.currentTime, audio: audio.currentTime });
+            samples.push({ now, lyric: Number(lyrics.dataset.currentTime), audio: audio.currentTime });
             requestAnimationFrame(frame);
         }
         requestAnimationFrame(frame);

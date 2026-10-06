@@ -6,6 +6,7 @@ import '@braccato/core/styles/instrumental.css';
 import { Kawarp } from '@kawarp/core';
 import { installPlaybackBridge } from './bridge.mjs';
 import { readPlaybackClock } from './playback-clock.mjs';
+import { createPlaybackDriver } from './playback-driver.mjs';
 import { toBraccato, chooseTranslationLanguage } from './convert.mjs';
 import './style.css';
 
@@ -42,6 +43,7 @@ function destroy() {
     wantedKey = null;
     if (!mounted) return;
     mounted.resize.disconnect();
+    mounted.playback.dispose();
     mounted.kawarp?.dispose();
     mounted.native.hidden = mounted.wasHidden;
     mounted.native.classList.remove('el-native-hidden');
@@ -150,6 +152,11 @@ function mount(native, data, item, manager, key) {
     }
     // Jellyfin patches document.createElement for its own legacy custom elements.
     const lyrics = new BraccatoLyricsElement();
+    const playback = createPlaybackDriver(lyrics);
+    const seek = seconds => {
+        playback.seek();
+        manager.seek(Math.round(seconds * 10000000));
+    };
     lyrics.className = 'el-words';
     lyrics.addEventListener('braccato:error', event => {
         failedKey = key;
@@ -183,12 +190,12 @@ function mount(native, data, item, manager, key) {
             line.addEventListener('keydown', event => {
                 if (event.key !== 'Enter' && event.key !== ' ') return;
                 event.preventDefault();
-                manager.seek(Math.round(Number(line.dataset.time) * 10000000));
+                seek(Number(line.dataset.time));
             });
         }
     });
     lyrics.host = {
-        seek: seconds => manager.seek(Math.round(seconds * 10000000)),
+        seek,
         isViewVisible: () => root.isConnected && !document.hidden,
         getScrollElement: () => lyrics,
         setResumeAffordanceVisible: visible => { resume.hidden = !visible; },
@@ -229,7 +236,7 @@ function mount(native, data, item, manager, key) {
         kawarp?.resize();
     });
     resize.observe(root);
-    mounted = { root, native, wasHidden, lyrics, play, key, resize, get kawarp() { return kawarp; } };
+    mounted = { root, native, wasHidden, lyrics, playback, play, key, resize, get kawarp() { return kawarp; } };
     window.EnhancedLyrics.active = true;
 }
 async function load(native, item, manager, key) {
@@ -277,9 +284,9 @@ function frame(now) {
         if (now - lastInspection > 250) { lastInspection = now; inspect(now); }
         if (mounted && playerManager) {
             const clock = readPlaybackClock(playerManager);
-            // Both setters tick the renderer; a steady play state needs no second tick.
-            if (mounted.lyrics.playing !== clock.playing) mounted.lyrics.playing = clock.playing;
-            mounted.lyrics.currentTime = clock.currentTime;
+            const player = playerManager.getCurrentPlayer();
+            const media = player?.isLocalPlayer === true ? player._mediaElement : null;
+            mounted.playback.update(clock, now, media?.playbackRate || 1, media);
             const label = clock.playing ? 'Pause' : 'Play';
             if (mounted.play.textContent !== label) mounted.play.textContent = label;
         }
